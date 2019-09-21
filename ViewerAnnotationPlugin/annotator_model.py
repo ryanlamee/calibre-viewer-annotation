@@ -1,18 +1,19 @@
 # almost exactly as
 # https://github.com/nickstenning/annotator-store-flask/blob/89b3037b995f094f73f24037123c0e818036e36c/annotator/model.py
 
-# <path_hack>
-# PATH HACK!!!
-# this is to allow calibre to include the local install of sqlalchemy.
-# don't know how to bundle them nicely inside the plugin directory alone.
 import os, sys
 import os.path as _p
-# CHANGE THIS:
-sys.path.insert(0, _p.expanduser("/usr/lib/python2.7/dist-packages"))
+
+# <path_hack>
+from pathlib import Path
+try:
+    import sqlalchemy as sqla
+except ModuleNotFoundError:
+    raise ModuleNotFoundError
+sys.path.insert(0, _p.expanduser(str(Path(sqla.__file__).parents[1])))
 # </path_hack>
 
 import datetime
-import sqlalchemy as sqla
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import \
         Table, Column, \
@@ -181,3 +182,6 @@ class Consumer(Base, DBMixin):
 # so class Annotation gets a `ranges` attr
 from sqlalchemy.orm import configure_mappers
 configure_mappers()
+
+
+#%%
